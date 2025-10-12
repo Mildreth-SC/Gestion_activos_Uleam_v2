@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - Gestión de Activos ULEAM</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="img/img.png" alt="ULEAM Logo">
+            </div>
+            <h2>Gestión de Activos</h2>
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="activos.html">Activos</a></li>
+                    <li><a href="reportes.html" class="active">Reportes</a></li>
+                    <li><a href="index.html">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header>
+                <h1>Generación de Reportes</h1>
+            </header>
+            <section class="report-filters">
+                <div class="filter-group">
+                    <label for="report-type">Tipo de Reporte</label>
+                    <select id="report-type">
+                        <option value="inventario">Inventario General</option>
+                        <option value="asignacion">Activos por Asignación</option>
+                        <option value="mantenimiento">Historial de Mantenimiento</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="start-date">Fecha de Inicio</label>
+                    <input type="date" id="start-date">
+                </div>
+                <div class="filter-group">
+                    <label for="end-date">Fecha de Fin</label>
+                    <input type="date" id="end-date">
+                </div>
+                <button class="generate-button">Generar Reporte</button>
+            </section>
+            <section class="report-display">
+                <h2>Vista Previa del Reporte</h2>
+                <div class="report-content">
+                    <p>Seleccione los filtros y genere un reporte para ver los resultados aquí.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>

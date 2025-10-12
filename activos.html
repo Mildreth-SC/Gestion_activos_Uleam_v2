@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Activos - ULEAM</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="img/img.png" alt="ULEAM Logo">
+            </div>
+            <h2>Gestión de Activos</h2>
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="activos.html" class="active">Activos</a></li>
+                    <li><a href="reportes.html">Reportes</a></li>
+                    <li><a href="index.html">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header>
+                <h1>Gestión de Activos</h1>
+                <button class="add-button">Añadir Activo</button>
+            </header>
+            <section class="filters">
+                <input type="text" placeholder="Buscar por nombre...">
+                <select>
+                    <option value="">Todas las categorías</option>
+                    <option value="tecnologia">Tecnología</option>
+                    <option value="mobiliario">Mobiliario</option>
+                    <option value="equipos">Equipos de Laboratorio</option>
+                </select>
+            </section>
+            <section class="asset-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Fecha de Compra</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Laptop Dell XPS 15</td>
+                            <td>Tecnología</td>
+                            <td>2023-01-15</td>
+                            <td>Asignado</td>
+                            <td>
+                                <button class="action-button">Editar</button>
+                                <button class="action-button delete">Eliminar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Silla de Oficina Ergonómica</td>
+                            <td>Mobiliario</td>
+                            <td>2022-11-20</td>
+                            <td>Disponible</td>
+                            <td>
+                                <button class="action-button">Editar</button>
+                                <button class="action-button delete">Eliminar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for Add/Edit Asset -->
+    <div id="asset-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 id="modal-title">Añadir Activo</h2>
+            <form id="asset-form">
+                <input type="hidden" id="asset-id">
+                <div class="input-group">
+                    <label for="asset-name">Nombre del Activo</label>
+                    <input type="text" id="asset-name" required>
+                </div>
+                <div class="input-group">
+                    <label for="asset-category">Categoría</label>
+                    <select id="asset-category">
+                        <option value="Tecnología">Tecnología</option>
+                        <option value="Mobiliario">Mobiliario</option>
+                        <option value="Equipos de Laboratorio">Equipos de Laboratorio</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="asset-date">Fecha de Compra</label>
+                    <input type="date" id="asset-date" required>
+                </div>
+                <div class="input-group">
+                    <label for="asset-status">Estado</label>
+                    <select id="asset-status">
+                        <option value="Asignado">Asignado</option>
+                        <option value="Disponible">Disponible</option>
+                        <option value="En Mantenimiento">En Mantenimiento</option>
+                    </select>
+                </div>
+                <button type="submit" class="save-button">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
