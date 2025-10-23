@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Gestión de Activos ULEAM</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="top-nav">
+        <div class="logo-container">
+            <img src="img/img.png" alt="ULEAM Logo">
+            <h2>Gestión de Activos</h2>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Principal</a></li>
+                <li><a href="activos.html">Activos</a></li>
+                <li><a href="reportes.html">Reportes</a></li>
+                <li><a href="registro.html" class="active">Registro</a></li>
+                <li><a href="login.html">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="dashboard-container">
+        <main class="main-content">
+            <h1>Registro de Usuarios y Activos</h1>
+            <section class="table-container">
+                <h2>Usuarios Registrados</h2>
+                <div class="user-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre de Usuario</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-body">
+                            <!-- User data will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <section class="table-container">
+                <h2>Activos Registrados</h2>
+                <div class="asset-table">
+                    <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Tipo de Activo</th>
+                            <th>Responsable</th>
+                            <th>Ubicación</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="asset-table-body">
+                        <!-- Asset data will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>

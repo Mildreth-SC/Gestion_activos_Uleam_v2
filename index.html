@@ -3,26 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Activos ULEAM - Login</title>
+    <title>Dashboard - Gestión de Activos ULEAM</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="login-page">
-    <div class="login-container">
-        <h2>Inicio de Sesión</h2>
-        <h1>Sistema de Gestión de Activos</h1>
-        <h3>Universidad Laica Eloy Alfaro de Manabí</h3>
-        <form id="login-form">
-            <div class="input-group">
-                <label for="username">Usuario</label>
-                <input type="text" id="username" name="username" required>
+<body>
+    <header class="top-nav">
+        <div class="logo-container">
+            <img src="img/img.png" alt="ULEAM Logo">
+            <h2>Gestión de Activos</h2>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="active">Principal</a></li>
+                <li><a href="activos.html">Activos</a></li>
+                <li><a href="reportes.html">Reportes</a></li>
+                <li><a href="registro.html">Registro</a></li>
+                <li><a href="login.html">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="dashboard-container">
+        <main class="main-content">
+            <h1>Principal</h1>
+            <div class="dashboard-layout">
+                <section class="widgets">
+                    <div class="widget">
+                        <h3>Total de Activos</h3>
+                        <p>1,250</p>
+                    </div>
+                    <div class="widget">
+                        <h3>Activos Asignados</h3>
+                        <p>1,100</p>
+                    </div>
+                    <div class="widget">
+                        <h3>Activos Disponibles</h3>
+                        <p>150</p>
+                    </div>
+                </section>
+                <section class="chart-container">
+                    <h3>Distribución de Activos por Categoría</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="asset-chart"></canvas>
+                    </div>
+                </section>
             </div>
-            <div class="input-group">
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit">Ingresar</button>
-        </form>
-        <p class="register-link">¿No tienes una cuenta? <a href="register.html">Regístrate aquí</a></p>
+        </main>
     </div>
     <script src="js/main.js"></script>
 </body>

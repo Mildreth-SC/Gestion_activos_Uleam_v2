@@ -1,4 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Default Admin User ---
+    const initializeAdmin = () => {
+        const users = JSON.parse(localStorage.getItem('asset_users')) || [];
+        if (users.length === 0) {
+            users.push({ username: 'admin', password: 'admin' });
+            localStorage.setItem('asset_users', JSON.stringify(users));
+            console.log('Default admin user created.');
+        }
+    };
+    initializeAdmin();
+
     // --- User Authentication ---
     const loginForm = document.querySelector('#login-form');
     const registerForm = document.querySelector('#register-form');
@@ -15,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (user) {
                 alert('Inicio de sesión exitoso!');
-                window.location.href = 'dashboard.html';
+                window.location.href = 'index.html';
             } else {
                 alert('Usuario o contraseña incorrectos.');
             }
@@ -41,12 +52,43 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('asset_users', JSON.stringify(users));
 
             alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
-            window.location.href = 'index.html';
+            window.location.href = 'login.html';
         });
     }
 
+    // --- Asset Data Management ---
+    const depreciationRates = {
+        'Edificaciones': 0.05,
+        'Instalaciones, maquinaria, equipos y muebles': 0.10,
+        'Vehículos y equipo caminero': 0.20,
+        'Equipos de cómputo y software': 0.33,
+        'Barcazas y aeronaves': 0.05,
+        'Aviones de fumigación': 0.25,
+        'Otros aviones': 0.10,
+        'Equipo ferroviario': 0.06,
+        'Vehículos de carga': 0.25,
+        'Vehículos eléctricos ligeros': 0.25,
+        'Equipos de Laboratorio': 0.10 // Manteniendo este por si acaso
+    };
+
+    const getAssets = () => {
+        let assets = JSON.parse(localStorage.getItem('assets'));
+        if (!assets) {
+            // Create default assets if none exist
+            assets = [
+                { id: 1, name: 'Laptop Dell XPS 15', type: 'Equipos de cómputo y software', responsible: 'Juan Pérez', location: 'Oficina 101', quantity: 1, price: 1000, date: '2023-01-15', status: 'Asignado' },
+                { id: 2, name: 'Silla de Oficina Ergonómica', type: 'Instalaciones, maquinaria, equipos y muebles', responsible: 'María López', location: 'Sala de Reuniones', quantity: 1, price: 150, date: '2022-11-20', status: 'Disponible' }
+            ];
+            localStorage.setItem('assets', JSON.stringify(assets));
+        }
+        return assets;
+    };
+
+    const saveAssets = (assets) => {
+        localStorage.setItem('assets', JSON.stringify(assets));
+    };
+
     // --- Activos Page Functionality ---
-    const assetTableBody = document.querySelector('.asset-table tbody');
     const modal = document.getElementById('asset-modal');
     const modalTitle = document.getElementById('modal-title');
     const assetForm = document.getElementById('asset-form');
@@ -57,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const addAssetButton = document.querySelector('.add-button');
     if (addAssetButton) {
         addAssetButton.addEventListener('click', () => {
+            const assetTableBody = document.querySelector('#activos-table-body');
             editingRow = null;
             modalTitle.textContent = 'Añadir Activo';
             assetForm.reset();
@@ -78,43 +121,124 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Filter Functionality ---
+    const searchInput = document.getElementById('search-input');
+    const typeFilter = document.getElementById('type-filter');
+
+    const filterAssets = () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const typeValue = typeFilter.value;
+        const allAssets = getAssets();
+
+        const filteredAssets = allAssets.filter(asset => {
+            const nameMatch = asset.name.toLowerCase().includes(searchTerm);
+            const typeMatch = typeValue === '' || asset.type === typeValue;
+            return nameMatch && typeMatch;
+        });
+
+        renderAssetTable(filteredAssets);
+    };
+
+    if (searchInput && typeFilter) {
+        searchInput.addEventListener('input', filterAssets);
+        typeFilter.addEventListener('change', filterAssets);
+    }
+
+    // Render asset table from localStorage
+    const renderAssetTable = (assetsToRender) => {
+        const assetTableBody = document.querySelector('#activos-table-body');
+        if (!assetTableBody) return;
+        const assets = assetsToRender || getAssets();
+        assetTableBody.innerHTML = ''; // Clear existing table
+        assets.forEach(asset => {
+            const row = document.createElement('tr');
+            row.dataset.id = asset.id;
+
+            const rate = depreciationRates[asset.type] || 0;
+            const totalValue = (asset.quantity || 1) * (asset.price || 0);
+            const annualDepreciation = totalValue * rate;
+
+            const purchaseDate = new Date(asset.date);
+            const yearsOwned = new Date().getFullYear() - purchaseDate.getFullYear();
+            const totalDepreciation = annualDepreciation * yearsOwned;
+            const currentValue = totalValue - totalDepreciation;
+
+            row.innerHTML = `
+                <td>${asset.id || ''}</td>
+                <td>${asset.name || ''}</td>
+                <td>${asset.type || ''}</td>
+                <td>${asset.responsible || ''}</td>
+                <td>${asset.location || ''}</td>
+                <td>${asset.quantity || ''}</td>
+                <td>$${annualDepreciation.toFixed(2)}</td>
+                <td>${(rate * 100).toFixed(0)}%</td>
+                <td>${yearsOwned}</td>
+                <td>$${currentValue.toFixed(2)}</td>
+                <td>${asset.date || ''}</td>
+                <td>${asset.status || ''}</td>
+                <td>
+                    <button class="action-button">Editar</button>
+                    <button class="action-button delete">Eliminar</button>
+                </td>
+            `;
+            assetTableBody.appendChild(row);
+        });
+        attachActionListeners();
+    };
+
+    // --- Real-time Depreciation Calculation in Modal ---
+    const calculateDepreciation = () => {
+        const type = document.getElementById('asset-type').value;
+        const quantity = parseInt(document.getElementById('asset-quantity').value) || 0;
+        const price = parseFloat(document.getElementById('asset-price').value) || 0;
+        
+        const rate = depreciationRates[type] || 0;
+        const totalValue = quantity * price;
+        const annualDepreciation = totalValue * rate;
+
+        document.getElementById('asset-degradation').value = `$${annualDepreciation.toFixed(2)}`;
+    };
+
+    if (assetForm) {
+        document.getElementById('asset-type').addEventListener('change', calculateDepreciation);
+        document.getElementById('asset-quantity').addEventListener('input', calculateDepreciation);
+        document.getElementById('asset-price').addEventListener('input', calculateDepreciation);
+    }
+
     // Handle form submission for both add and edit
     if (assetForm) {
         assetForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const id = document.getElementById('asset-id').value;
-            const name = document.getElementById('asset-name').value;
-            const category = document.getElementById('asset-category').value;
-            const date = document.getElementById('asset-date').value;
-            const status = document.getElementById('asset-status').value;
+            const assets = getAssets();
+            const assetData = {
+                id: document.getElementById('asset-id').value,
+                name: document.getElementById('asset-name').value,
+                type: document.getElementById('asset-type').value,
+                responsible: document.getElementById('asset-responsible').value,
+                location: document.getElementById('asset-location').value,
+                quantity: parseInt(document.getElementById('asset-quantity').value),
+                price: parseFloat(document.getElementById('asset-price').value),
+                date: document.getElementById('asset-date').value,
+                status: document.getElementById('asset-status').value
+            };
 
             if (editingRow) {
-                // Update existing row
-                editingRow.cells[1].textContent = name;
-                editingRow.cells[2].textContent = category;
-                editingRow.cells[3].textContent = date;
-                editingRow.cells[4].textContent = status;
-                alert('Activo actualizado.');
+                // Update existing asset
+                const index = assets.findIndex(a => a.id == assetData.id);
+                if (index !== -1) {
+                    assets[index] = assetData;
+                    alert('Activo actualizado.');
+                }
             } else {
-                // Add new row
-                const newRow = document.createElement('tr');
-                newRow.innerHTML = `
-                    <td>${id}</td>
-                    <td>${name}</td>
-                    <td>${category}</td>
-                    <td>${date}</td>
-                    <td>${status}</td>
-                    <td>
-                        <button class="action-button">Editar</button>
-                        <button class="action-button delete">Eliminar</button>
-                    </td>
-                `;
-                assetTableBody.appendChild(newRow);
+                // Add new asset
+                assetData.id = assets.length > 0 ? Math.max(...assets.map(a => a.id)) + 1 : 1;
+                assets.push(assetData);
                 alert('Nuevo activo añadido.');
             }
             
+            saveAssets(assets);
+            renderAssetTable();
             modal.style.display = 'none';
-            attachActionListeners();
         });
     }
 
@@ -128,24 +252,148 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleActionClick(e) {
         const row = e.target.closest('tr');
+        const assetId = row.dataset.id;
+        const assets = getAssets();
+        const asset = assets.find(a => a.id == assetId);
+
         if (e.target.classList.contains('delete')) {
             if (confirm('¿Está seguro de que desea eliminar este activo?')) {
-                row.remove();
+                const updatedAssets = assets.filter(a => a.id != assetId);
+                saveAssets(updatedAssets);
+                renderAssetTable();
                 alert('Activo eliminado.');
             }
         } else { // Edit button
             editingRow = row;
             modalTitle.textContent = 'Editar Activo';
-            document.getElementById('asset-id').value = row.cells[0].textContent;
-            document.getElementById('asset-name').value = row.cells[1].textContent;
-            document.getElementById('asset-category').value = row.cells[2].textContent;
-            document.getElementById('asset-date').value = row.cells[3].textContent;
-            document.getElementById('asset-status').value = row.cells[4].textContent;
+            document.getElementById('asset-id').value = asset.id;
+            document.getElementById('asset-name').value = asset.name;
+            document.getElementById('asset-type').value = asset.type;
+            document.getElementById('asset-responsible').value = asset.responsible;
+            document.getElementById('asset-location').value = asset.location;
+            document.getElementById('asset-quantity').value = asset.quantity;
+            document.getElementById('asset-price').value = asset.price;
+            document.getElementById('asset-date').value = asset.date;
+            document.getElementById('asset-status').value = asset.status;
+            
+            // Calculate and display depreciation on edit
+            const rate = depreciationRates[asset.type] || 0;
+            const totalValue = asset.quantity * asset.price;
+            const annualDepreciation = totalValue * rate;
+            document.getElementById('asset-degradation').value = `$${annualDepreciation.toFixed(2)}`;
+
             modal.style.display = 'block';
         }
     }
     
-    attachActionListeners();
+    renderAssetTable();
+
+
+    // --- Dashboard Page Functionality ---
+    const updateDashboardWidgets = () => {
+        const widgets = document.querySelector('.widgets');
+        if (!widgets) return;
+
+        const assets = getAssets();
+        const totalAssets = assets.length;
+        const assignedAssets = assets.filter(a => a.status === 'Asignado').length;
+        const availableAssets = assets.filter(a => a.status === 'Disponible').length;
+
+        document.querySelector('.widget:nth-child(1) p').textContent = totalAssets;
+        document.querySelector('.widget:nth-child(2) p').textContent = assignedAssets;
+        document.querySelector('.widget:nth-child(3) p').textContent = availableAssets;
+    };
+
+    updateDashboardWidgets(); // Update widgets on page load
+
+
+    // --- Chart Functionality ---
+    const renderAssetChart = () => {
+        const chartCanvas = document.getElementById('asset-chart');
+        if (!chartCanvas) return;
+
+        const assets = getAssets();
+        const assetCounts = assets.reduce((acc, asset) => {
+            acc[asset.type] = (acc[asset.type] || 0) + 1;
+            return acc;
+        }, {});
+
+        const chartData = {
+            labels: Object.keys(assetCounts),
+            datasets: [{
+                label: 'Distribución de Activos',
+                data: Object.values(assetCounts),
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        new Chart(chartCanvas, {
+            type: 'pie',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    };
+
+    renderAssetChart();
+
+
+    // --- Registro Page Functionality ---
+    const renderRegistroTables = () => {
+        const userTableBody = document.querySelector('#user-table-body');
+        const assetTableBody = document.querySelector('#asset-table-body');
+
+        if (userTableBody) {
+            const users = JSON.parse(localStorage.getItem('asset_users')) || [];
+            userTableBody.innerHTML = '';
+            users.forEach((user, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${user.username}</td>
+                `;
+                userTableBody.appendChild(row);
+            });
+        }
+
+        if (assetTableBody) {
+            const assets = getAssets();
+            assetTableBody.innerHTML = '';
+            assets.forEach(asset => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${asset.id}</td>
+                    <td>${asset.name}</td>
+                    <td>${asset.type}</td>
+                    <td>${asset.responsible}</td>
+                    <td>${asset.location}</td>
+                    <td>${asset.status}</td>
+                `;
+                assetTableBody.appendChild(row);
+            });
+        }
+    };
+
+    renderRegistroTables();
+
 
 
     // --- Reportes Page Functionality ---
@@ -153,15 +401,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (generateReportButton) {
         generateReportButton.addEventListener('click', () => {
             const reportType = document.getElementById('report-type').value;
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
             const reportContent = document.querySelector('.report-content');
-            
-            // Sample data for the report
-            const data = [
-                { id: 1, nombre: 'Laptop Dell XPS 15', categoria: 'Tecnología', estado: 'Asignado' },
-                { id: 2, nombre: 'Silla de Oficina Ergonómica', categoria: 'Mobiliario', estado: 'Disponible' },
-                { id: 3, nombre: 'Proyector Epson', categoria: 'Tecnología', estado: 'En Mantenimiento' },
-                { id: 4, nombre: 'Escritorio de Madera', categoria: 'Mobiliario', estado: 'Asignado' }
-            ];
+
+            let assets = getAssets();
+
+            // Filter by report type
+            if (reportType === 'asignacion') {
+                assets = assets.filter(asset => asset.status === 'Asignado');
+            } else if (reportType === 'mantenimiento') {
+                assets = assets.filter(asset => asset.status === 'En Mantenimiento');
+            }
+
+            // Filter by date range if dates are provided
+            if (startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                assets = assets.filter(asset => {
+                    const assetDate = new Date(asset.date);
+                    return assetDate >= start && assetDate <= end;
+                });
+            }
+
+            if (assets.length === 0) {
+                reportContent.innerHTML = '<p>No se encontraron activos que coincidan con los filtros seleccionados.</p>';
+                return;
+            }
 
             let tableHTML = `
                 <table style="width:100%; border-collapse: collapse;">
@@ -169,20 +435,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         <tr>
                             <th style="padding: 8px; border: 1px solid #ddd; background-color: #f2f2f2;">ID</th>
                             <th style="padding: 8px; border: 1px solid #ddd; background-color: #f2f2f2;">Nombre</th>
-                            <th style="padding: 8px; border: 1px solid #ddd; background-color: #f2f2f2;">Categoría</th>
+                            <th style="padding: 8px; border: 1px solid #ddd; background-color: #f2f2f2;">Tipo</th>
+                            <th style="padding: 8px; border: 1px solid #ddd; background-color: #f2f2f2;">Responsable</th>
+                            <th style="padding: 8px; border: 1px solid #ddd; background-color: #f2f2f2;">Ubicación</th>
+                            <th style="padding: 8px; border: 1px solid #ddd; background-color: #f2f2f2;">Fecha de Compra</th>
                             <th style="padding: 8px; border: 1px solid #ddd; background-color: #f2f2f2;">Estado</th>
                         </tr>
                     </thead>
                     <tbody>
             `;
 
-            data.forEach(item => {
+            assets.forEach(asset => {
                 tableHTML += `
                     <tr>
-                        <td style="padding: 8px; border: 1px solid #ddd;">${item.id}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">${item.nombre}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">${item.categoria}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">${item.estado}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${asset.id}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${asset.name}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${asset.type}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${asset.responsible}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${asset.location}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${asset.date}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${asset.status}</td>
                     </tr>
                 `;
             });
@@ -195,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const downloadButton = document.createElement('button');
             downloadButton.textContent = 'Descargar Reporte (CSV)';
             downloadButton.style.marginTop = '1rem';
-            downloadButton.addEventListener('click', () => downloadCSV(data));
+            downloadButton.addEventListener('click', () => downloadCSV(assets));
             reportContent.appendChild(downloadButton);
 
             alert(`Reporte de "${reportType}" generado exitosamente.`);
@@ -203,10 +475,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function downloadCSV(data) {
-        const headers = ['ID', 'Nombre', 'Categoría', 'Estado'];
+        const headers = ['ID', 'Nombre', 'Tipo', 'Responsable', 'Ubicación', 'Fecha de Compra', 'Estado'];
         const csvContent = [
             headers.join(','),
-            ...data.map(item => [item.id, item.nombre, item.categoria, item.estado].join(','))
+            ...data.map(item => [item.id, item.name, item.type, item.responsible, item.location, item.date, item.status].join(','))
         ].join('\n');
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

@@ -7,33 +7,42 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="logo-container">
-                <img src="img/img.png" alt="ULEAM Logo">
-            </div>
+    <header class="top-nav">
+        <div class="logo-container">
+            <img src="img/img.png" alt="ULEAM Logo">
             <h2>Gestión de Activos</h2>
-            <nav>
-                <ul>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="activos.html" class="active">Activos</a></li>
-                    <li><a href="reportes.html">Reportes</a></li>
-                    <li><a href="index.html">Cerrar Sesión</a></li>
-                </ul>
-            </nav>
-        </aside>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Principal</a></li>
+                <li><a href="activos.html" class="active">Activos</a></li>
+                <li><a href="reportes.html">Reportes</a></li>
+                <li><a href="registro.html">Registro</a></li>
+                <li><a href="login.html">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="dashboard-container">
         <main class="main-content">
-            <header>
+            <div class="main-header">
                 <h1>Gestión de Activos</h1>
                 <button class="add-button">Añadir Activo</button>
-            </header>
+            </div>
             <section class="filters">
-                <input type="text" placeholder="Buscar por nombre...">
-                <select>
-                    <option value="">Todas las categorías</option>
-                    <option value="tecnologia">Tecnología</option>
-                    <option value="mobiliario">Mobiliario</option>
-                    <option value="equipos">Equipos de Laboratorio</option>
+                <input type="text" id="search-input" placeholder="Buscar por nombre...">
+                <select id="type-filter">
+                    <option value="">Todos los tipos</option>
+                    <option value="Edificaciones">Edificaciones</option>
+                    <option value="Instalaciones, maquinaria, equipos y muebles">Instalaciones, maquinaria, equipos y muebles</option>
+                    <option value="Vehículos y equipo caminero">Vehículos y equipo caminero</option>
+                    <option value="Equipos de cómputo y software">Equipos de cómputo y software</option>
+                    <option value="Barcazas y aeronaves">Barcazas y aeronaves</option>
+                    <option value="Aviones de fumigación">Aviones de fumigación</option>
+                    <option value="Otros aviones">Otros aviones</option>
+                    <option value="Equipo ferroviario">Equipo ferroviario</option>
+                    <option value="Vehículos de carga">Vehículos de carga</option>
+                    <option value="Vehículos eléctricos ligeros">Vehículos eléctricos ligeros</option>
+                    <option value="Equipos de Laboratorio">Equipos de Laboratorio</option>
                 </select>
             </section>
             <section class="asset-table">
@@ -42,17 +51,30 @@
                         <tr>
                             <th>ID</th>
                             <th>Nombre</th>
-                            <th>Categoría</th>
+                            <th>Tipo de Activo</th>
+                            <th>Responsable</th>
+                            <th>Ubicación</th>
+                            <th>Cantidad</th>
+                            <th>Depreciación Anual</th>
+                            <th>% Dep.</th>
+                            <th>Años de Uso</th>
+                            <th>Valor Actual</th>
                             <th>Fecha de Compra</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="activos-table-body">
                         <tr>
                             <td>1</td>
                             <td>Laptop Dell XPS 15</td>
                             <td>Tecnología</td>
+                            <td>Juan Pérez</td>
+                            <td>Oficina 101</td>
+                            <td>$330.00</td>
+                            <td>33%</td>
+                            <td>2</td>
+                            <td>$670.00</td>
                             <td>2023-01-15</td>
                             <td>Asignado</td>
                             <td>
@@ -64,6 +86,12 @@
                             <td>2</td>
                             <td>Silla de Oficina Ergonómica</td>
                             <td>Mobiliario</td>
+                            <td>María López</td>
+                            <td>Sala de Reuniones</td>
+                            <td>$15.00</td>
+                            <td>10%</td>
+                            <td>3</td>
+                            <td>$110.00</td>
                             <td>2022-11-20</td>
                             <td>Disponible</td>
                             <td>
@@ -89,12 +117,40 @@
                     <input type="text" id="asset-name" required>
                 </div>
                 <div class="input-group">
-                    <label for="asset-category">Categoría</label>
-                    <select id="asset-category">
-                        <option value="Tecnología">Tecnología</option>
-                        <option value="Mobiliario">Mobiliario</option>
+                    <label for="asset-type">Tipo de Activo</label>
+                    <select id="asset-type">
+                        <option value="Edificaciones">Edificaciones</option>
+                        <option value="Instalaciones, maquinaria, equipos y muebles">Instalaciones, maquinaria, equipos y muebles</option>
+                        <option value="Vehículos y equipo caminero">Vehículos y equipo caminero</option>
+                        <option value="Equipos de cómputo y software">Equipos de cómputo y software</option>
+                        <option value="Barcazas y aeronaves">Barcazas y aeronaves</option>
+                        <option value="Aviones de fumigación">Aviones de fumigación</option>
+                        <option value="Otros aviones">Otros aviones</option>
+                        <option value="Equipo ferroviario">Equipo ferroviario</option>
+                        <option value="Vehículos de carga">Vehículos de carga</option>
+                        <option value="Vehículos eléctricos ligeros">Vehículos eléctricos ligeros</option>
                         <option value="Equipos de Laboratorio">Equipos de Laboratorio</option>
                     </select>
+                </div>
+                <div class="input-group">
+                    <label for="asset-responsible">Responsable</label>
+                    <input type="text" id="asset-responsible" required>
+                </div>
+                <div class="input-group">
+                    <label for="asset-location">Ubicación</label>
+                    <input type="text" id="asset-location" required>
+                </div>
+                <div class="input-group">
+                    <label for="asset-quantity">Cantidad</label>
+                    <input type="number" id="asset-quantity" required>
+                </div>
+                <div class="input-group">
+                    <label for="asset-price">Precio Unitario</label>
+                    <input type="number" id="asset-price" step="0.01" required>
+                </div>
+                <div class="input-group">
+                    <label for="asset-degradation">Depreciación Anual</label>
+                    <input type="text" id="asset-degradation" readonly>
                 </div>
                 <div class="input-group">
                     <label for="asset-date">Fecha de Compra</label>
