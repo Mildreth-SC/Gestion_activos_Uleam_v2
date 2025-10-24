@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // --- Default Admin User ---
     const initializeAdmin = () => {
         const users = JSON.parse(localStorage.getItem('asset_users')) || [];
@@ -72,21 +72,30 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const getAssets = () => {
-        let assets = JSON.parse(localStorage.getItem('assets'));
-        if (!assets) {
-            // Create default assets if none exist
-            assets = [
-                { id: 1, name: 'Laptop Dell XPS 15', type: 'Equipos de cómputo y software', responsible: 'Juan Pérez', location: 'Oficina 101', quantity: 1, price: 1000, date: '2023-01-15', status: 'Asignado' },
-                { id: 2, name: 'Silla de Oficina Ergonómica', type: 'Instalaciones, maquinaria, equipos y muebles', responsible: 'María López', location: 'Sala de Reuniones', quantity: 1, price: 150, date: '2022-11-20', status: 'Disponible' }
-            ];
-            localStorage.setItem('assets', JSON.stringify(assets));
-        }
-        return assets;
+        return JSON.parse(localStorage.getItem('assets')) || [];
     };
 
     const saveAssets = (assets) => {
         localStorage.setItem('assets', JSON.stringify(assets));
     };
+
+    // Load initial assets from JSON if localStorage is empty
+    const initializeAssets = async () => {
+        if (!localStorage.getItem('assets')) {
+            try {
+                const response = await fetch('data/assets.json');
+                if (!response.ok) throw new Error('Failed to load initial asset data.');
+                const defaultAssets = await response.json();
+                saveAssets(defaultAssets);
+                console.log('Default assets loaded from data/assets.json');
+            } catch (error) {
+                console.error(error);
+                saveAssets([]); // Initialize with empty array on error
+            }
+        }
+    };
+
+    await initializeAssets();
 
     // --- Activos Page Functionality ---
     const modal = document.getElementById('asset-modal');
@@ -410,6 +419,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Filter by report type
             if (reportType === 'asignacion') {
                 assets = assets.filter(asset => asset.status === 'Asignado');
+            } else if (reportType === 'disponibles') {
+                assets = assets.filter(asset => asset.status === 'Disponible');
             } else if (reportType === 'mantenimiento') {
                 assets = assets.filter(asset => asset.status === 'En Mantenimiento');
             }

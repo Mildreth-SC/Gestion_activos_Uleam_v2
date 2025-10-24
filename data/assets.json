@@ -1,0 +1,4 @@
+[
+    { "id": 1, "name": "Laptop Dell XPS 15", "type": "Equipos de cómputo y software", "responsible": "Juan Pérez", "location": "Oficina 101", "quantity": 1, "price": 1000, "date": "2023-01-15", "status": "Asignado" },
+    { "id": 2, "name": "Silla de Oficina Ergonómica", "type": "Instalaciones, maquinaria, equipos y muebles", "responsible": "María López", "location": "Sala de Reuniones", "quantity": 1, "price": 150, "date": "2022-11-20", "status": "Disponible" }
+]
