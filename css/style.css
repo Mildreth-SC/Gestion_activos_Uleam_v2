@@ -407,3 +407,8 @@ button:hover {
     cursor: pointer;
     color: #333;
 }
+
+/* Generic Modal Styles */
+#generic-modal .modal-content {
+    text-align: center;
+}

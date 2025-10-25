@@ -1,4 +1,32 @@
 document.addEventListener('DOMContentLoaded', async () => {
+    // --- Generic Modal Functionality ---
+    const genericModal = document.getElementById('generic-modal');
+    const genericModalTitle = document.getElementById('generic-modal-title');
+    const genericModalMessage = document.getElementById('generic-modal-message');
+    const genericCloseButton = genericModal ? genericModal.querySelector('.close-button') : null;
+
+    const showModal = (title, message) => {
+        if (genericModal) {
+            genericModalTitle.textContent = title;
+            genericModalMessage.textContent = message;
+            genericModal.style.display = 'block';
+        } else {
+            alert(message);
+        }
+    };
+
+    if (genericCloseButton) {
+        genericCloseButton.addEventListener('click', () => {
+            genericModal.style.display = 'none';
+        });
+    }
+
+    window.addEventListener('click', (e) => {
+        if (e.target == genericModal) {
+            genericModal.style.display = 'none';
+        }
+    });
+
     // --- Default Admin User ---
     const initializeAdmin = () => {
         const users = JSON.parse(localStorage.getItem('asset_users')) || [];
@@ -19,16 +47,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.preventDefault();
             const username = e.target.username.value;
             const password = e.target.password.value;
+
+            if (username.trim() === '' || password.trim() === '') {
+                alert('Por favor, ingrese su usuario y contraseña.');
+                return;
+            }
             
             // Retrieve users from localStorage
             const users = JSON.parse(localStorage.getItem('asset_users')) || [];
             const user = users.find(u => u.username === username && u.password === password);
 
             if (user) {
-                alert('Inicio de sesión exitoso!');
-                window.location.href = 'index.html';
+                showModal('Éxito', 'Inicio de sesión exitoso!');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
             } else {
-                alert('Usuario o contraseña incorrectos.');
+                showModal('Error', 'Usuario o contraseña incorrectos.');
             }
         });
     }
@@ -39,11 +74,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             const username = document.getElementById('new-username').value;
             const password = document.getElementById('new-password').value;
 
+            if (username.length < 4) {
+                showModal('Error de Validación', 'El nombre de usuario debe tener al menos 4 caracteres.');
+                return;
+            }
+
+            if (password.length < 6) {
+                showModal('Error de Validación', 'La contraseña debe tener al menos 6 caracteres.');
+                return;
+            }
+
             const users = JSON.parse(localStorage.getItem('asset_users')) || [];
             
             // Check if user already exists
             if (users.find(u => u.username === username)) {
-                alert('Este nombre de usuario ya está en uso.');
+                showModal('Error', 'Este nombre de usuario ya está en uso.');
                 return;
             }
 
@@ -51,8 +96,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             users.push({ username, password });
             localStorage.setItem('asset_users', JSON.stringify(users));
 
-            alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
-            window.location.href = 'login.html';
+            showModal('Éxito', '¡Registro exitoso! Ahora puedes iniciar sesión.');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
         });
     }
 
@@ -141,7 +188,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const filteredAssets = allAssets.filter(asset => {
             const nameMatch = asset.name.toLowerCase().includes(searchTerm);
-            const typeMatch = typeValue === '' || asset.type === typeValue;
+            const typeMatch = typeValue === '' || asset.type === typeMatch;
             return nameMatch && typeMatch;
         });
 
@@ -218,16 +265,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (assetForm) {
         assetForm.addEventListener('submit', (e) => {
             e.preventDefault();
+
+            const assetName = document.getElementById('asset-name').value;
+            const assetResponsible = document.getElementById('asset-responsible').value;
+            const assetLocation = document.getElementById('asset-location').value;
+            const assetQuantity = parseInt(document.getElementById('asset-quantity').value);
+            const assetPrice = parseFloat(document.getElementById('asset-price').value);
+            const assetDate = document.getElementById('asset-date').value;
+
+            if (!assetName.trim() || !assetResponsible.trim() || !assetLocation.trim() || !assetDate) {
+                showModal('Error de Validación', 'Por favor, complete todos los campos.');
+                return;
+            }
+
+            if (isNaN(assetQuantity) || assetQuantity <= 0) {
+                showModal('Error de Validación', 'La cantidad debe ser un número positivo.');
+                return;
+            }
+
+            if (isNaN(assetPrice) || assetPrice <= 0) {
+                showModal('Error de Validación', 'El precio debe ser un número positivo.');
+                return;
+            }
+
             const assets = getAssets();
             const assetData = {
                 id: document.getElementById('asset-id').value,
-                name: document.getElementById('asset-name').value,
+                name: assetName,
                 type: document.getElementById('asset-type').value,
-                responsible: document.getElementById('asset-responsible').value,
-                location: document.getElementById('asset-location').value,
-                quantity: parseInt(document.getElementById('asset-quantity').value),
-                price: parseFloat(document.getElementById('asset-price').value),
-                date: document.getElementById('asset-date').value,
+                responsible: assetResponsible,
+                location: assetLocation,
+                quantity: assetQuantity,
+                price: assetPrice,
+                date: assetDate,
                 status: document.getElementById('asset-status').value
             };
 
@@ -236,13 +306,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const index = assets.findIndex(a => a.id == assetData.id);
                 if (index !== -1) {
                     assets[index] = assetData;
-                    alert('Activo actualizado.');
+                    showModal('Éxito', 'Activo actualizado.');
                 }
             } else {
                 // Add new asset
                 assetData.id = assets.length > 0 ? Math.max(...assets.map(a => a.id)) + 1 : 1;
                 assets.push(assetData);
-                alert('Nuevo activo añadido.');
+                showModal('Éxito', 'Nuevo activo añadido.');
             }
             
             saveAssets(assets);
@@ -270,7 +340,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const updatedAssets = assets.filter(a => a.id != assetId);
                 saveAssets(updatedAssets);
                 renderAssetTable();
-                alert('Activo eliminado.');
+                showModal('Éxito', 'Activo eliminado.');
             }
         } else { // Edit button
             editingRow = row;
