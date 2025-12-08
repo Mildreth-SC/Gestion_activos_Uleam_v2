@@ -25,6 +25,65 @@
     <div class="dashboard-container">
         <main class="main-content">
             <h1>Generación de Reportes</h1>
+            
+            <!-- SECCIÓN XML ESPECIALIZADA -->
+            <section class="xml-auditoria-section">
+                <h2>Sistema XML de Auditoría y Control</h2>
+                <p>Generación de documentos oficiales con información avanzada</p>
+                
+                <div class="xml-grid">
+                    
+                    <div class="xml-card">
+                        <h4>Auditoría Completa</h4>
+                        <p>Incluye: Depreciaciones, alertas, valoraciones y firmas digitales</p>
+                        <button onclick="generarAuditoriaXML()" class="generate-button">
+                            Generar Auditoría XML
+                        </button>
+                    </div>
+                    
+                    <div class="xml-card">
+                        <h4>Reporte Depreciación</h4>
+                        <p>Cálculo automático de depreciación anual y acumulada</p>
+                        <button onclick="generarDepreciacionXML()" class="generate-button">
+                            Generar Depreciación XML
+                        </button>
+                    </div>
+                    
+                    <div class="xml-card">
+                        <h4>Historial de Movimientos</h4>
+                        <p>Trazabilidad completa de asignaciones y cambios</p>
+                        <button onclick="generarHistorialXML()" class="generate-button">
+                            Generar Historial XML
+                        </button>
+                    </div>
+                    
+                    <div class="xml-card">
+                        <h4>Certificado de Asignación</h4>
+                        <p>Documento oficial con responsabilidades detalladas</p>
+                        <div class="certificate-input">
+                            <input type="number" id="assetIdCertificado" placeholder="ID Activo" min="1">
+                            <button onclick="generarCertificadoXMLporID()" class="generate-button">
+                                Generar
+                            </button>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <div class="xml-features">
+                    <strong>Características exclusivas XML:</strong>
+                    <ul>
+                        <li>Cálculo automático de depreciación según vida útil</li>
+                        <li>Sistema de alertas por mantenimiento y obsolescencia</li>
+                        <li>Validación de garantías y períodos fiscales</li>
+                        <li>Certificaciones con firmas digitales</li>
+                        <li>Trazabilidad completa de movimientos</li>
+                        <li>Códigos patrimoniales autogenerados</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SECCIÓN DE REPORTES EXISTENTE -->
             <section class="report-filters">
                 <div class="filter-group">
                     <label for="report-type">Tipo de Reporte</label>
@@ -53,6 +112,21 @@
             </section>
         </main>
     </div>
+    
+    <!-- SCRIPTS -->
+    <script src="js/xmlAuditoria.js"></script>
     <script src="js/main.js"></script>
+    
+    <script>
+        // Función auxiliar para certificado con ID desde input
+        function generarCertificadoXMLporID() {
+            const assetId = document.getElementById('assetIdCertificado').value;
+            if (!assetId) {
+                alert('❌ Por favor ingrese el ID del activo');
+                return;
+            }
+            generarCertificadoXML(assetId);
+        }
+    </script>
 </body>
 </html>

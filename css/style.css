@@ -412,3 +412,111 @@ button:hover {
 #generic-modal .modal-content {
     text-align: center;
 }
+
+/* XML Auditoria Section */
+.xml-auditoria-section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e0e0e0;
+}
+
+.xml-auditoria-section h2 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #00693E;
+}
+
+.xml-auditoria-section > p {
+    font-size: 14px;
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.xml-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.xml-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.xml-card h4 {
+    color: #5a5fb8;
+    margin-bottom: 10px;
+    margin-top: 0;
+    font-weight: 600;
+}
+
+.xml-card p {
+    font-size: 13px;
+    margin-bottom: 15px;
+    color: #666;
+}
+
+.xml-card .generate-button {
+    width: 100%;
+    background: #00693E;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.xml-card .generate-button:hover {
+    background: #005734;
+}
+
+.certificate-input {
+    display: flex;
+    gap: 5px;
+}
+
+.certificate-input input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.certificate-input .generate-button {
+    width: auto;
+    padding: 8px 15px;
+}
+
+.xml-features {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #00693E;
+    color: #333;
+}
+
+.xml-features strong {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #00693E;
+}
+
+.xml-features ul {
+    font-size: 13px;
+    line-height: 1.8;
+    margin: 0;
+    padding-left: 20px;
+}
+
+.xml-features ul li {
+    margin-bottom: 5px;
+}
