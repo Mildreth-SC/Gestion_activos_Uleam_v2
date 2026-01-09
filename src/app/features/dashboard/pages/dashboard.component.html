@@ -1,0 +1,73 @@
+<app-navbar></app-navbar>
+
+<div class="dashboard-container">
+  <main class="main-content">
+    <div class="page-header">
+      <h1>Panel de Control</h1>
+      <p class="page-subtitle">Resumen general del sistema de gestión de activos</p>
+    </div>
+    <div class="dashboard-layout">
+      <section class="widgets">
+        <div class="widget widget-total">
+          <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4 4h16v16H4V4zm2 2v12h12V6H6z"/>
+              <path d="M8 8h8v2H8V8zm0 4h8v2H8v-2zm0 4h5v2H8v-2z"/>
+            </svg>
+          </div>
+          <div class="widget-content">
+            <span class="widget-label">Total de Activos</span>
+            <p class="widget-value">{{ totalActivos }}</p>
+            <span class="widget-sublabel">Registrados en el sistema</span>
+          </div>
+        </div>
+        <div class="widget widget-assigned">
+          <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+          </div>
+          <div class="widget-content">
+            <span class="widget-label">Activos No Disponibles</span>
+            <p class="widget-value">{{ activosNoDisponibles }}</p>
+            <span class="widget-sublabel">Fuera de servicio</span>
+          </div>
+        </div>
+        <div class="widget widget-available">
+          <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+          </div>
+          <div class="widget-content">
+            <span class="widget-label">Activos Disponibles</span>
+            <p class="widget-value">{{ activosDisponibles }}</p>
+            <span class="widget-sublabel">Listos para asignar</span>
+          </div>
+        </div>
+        <div class="widget widget-value">
+          <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+            </svg>
+          </div>
+          <div class="widget-content">
+            <span class="widget-label">Valor Total</span>
+            <p class="widget-value">\${{ valorTotal.toFixed(2) }}</p>
+            <span class="widget-sublabel">Inventario completo</span>
+          </div>
+        </div>
+      </section>
+      
+      <section class="chart-container">
+        <div class="chart-header">
+          <h3>Distribución de Activos por Categoría</h3>
+          <p class="chart-description">Vista gráfica de la distribución del inventario</p>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="asset-chart"></canvas>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>

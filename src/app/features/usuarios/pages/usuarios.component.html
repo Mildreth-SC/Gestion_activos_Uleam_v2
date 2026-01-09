@@ -1,0 +1,77 @@
+<app-navbar></app-navbar>
+
+<div class="dashboard-container">
+  <main class="main-content">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <h1>Usuarios Registrados</h1>
+        <p class="page-subtitle">Panel de administración de usuarios del sistema</p>
+      </div>
+      <button class="export-button" (click)="exportToCSV()">
+        <span class="btn-icon">↓</span>
+        <span>Exportar CSV</span>
+      </button>
+    </div>
+
+    <!-- Búsqueda y estadísticas -->
+    <div class="stats-section">
+      <div class="stat-card">
+        <h3>Total de Usuarios</h3>
+        <p class="stat-number">{{ users.length }}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Usuarios Mostrados</h3>
+        <p class="stat-number">{{ filteredUsers.length }}</p>
+      </div>
+    </div>
+
+    <!-- Filtro de búsqueda -->
+    <div class="search-section">
+      <div class="search-header">
+        <h2>Buscar Usuario</h2>
+        <p>Filtre la lista de usuarios registrados</p>
+      </div>
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+        placeholder="Buscar por nombre de usuario..."
+        class="search-input">
+    </div>
+
+    <!-- Tabla de usuarios -->
+    <div class="users-table">
+      <div class="table-header">
+        <h2>Lista de Usuarios</h2>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Usuario</th>
+              <th>Fecha de Registro</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filteredUsers; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>
+                <div class="user-info">
+                  <span class="username">{{ user.username }}</span>
+                </div>
+              </td>
+              <td>{{ user.registrationDate }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="filteredUsers.length === 0" class="no-users">
+          <p>No se encontraron usuarios que coincidan con la búsqueda</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

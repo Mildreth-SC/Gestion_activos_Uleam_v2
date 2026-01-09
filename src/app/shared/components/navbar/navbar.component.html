@@ -1,0 +1,25 @@
+<header class="top-nav">
+  <div class="logo-container">
+    <img src="img/img.png" alt="ULEAM Logo">
+    <h2>Gestión de Activos</h2>
+  </div>
+  <nav>
+    <ul>
+      <li>
+        <a routerLink="/dashboard" routerLinkActive="active">Principal</a>
+      </li>
+      <li>
+        <a routerLink="/activos" routerLinkActive="active">Activos</a>
+      </li>
+      <li>
+        <a routerLink="/reportes" routerLinkActive="active">Reportes</a>
+      </li>
+      <li>
+        <a routerLink="/usuarios" routerLinkActive="active">Usuarios</a>
+      </li>
+      <li>
+        <a (click)="logout()" class="logout-btn">Cerrar Sesión</a>
+      </li>
+    </ul>
+  </nav>
+</header>

@@ -1,0 +1,218 @@
+<app-navbar></app-navbar>
+
+<div class="dashboard-container">
+  <main class="main-content">
+    <div class="page-header">
+      <div class="header-content">
+        <h1>Gestión de Activos</h1>
+        <p class="page-subtitle">Administre y controle todos los activos del inventario institucional</p>
+      </div>
+      <button class="add-button" (click)="openAddModal()">
+        <span class="btn-icon">+</span>
+        <span>Añadir Activo</span>
+      </button>
+    </div>
+
+    <!-- Filtros y Estadísticas -->
+    <div class="filters-section">
+      <div class="filters-header">
+        <h2>Filtros de Búsqueda</h2>
+        <p>Refine su búsqueda utilizando los siguientes criterios</p>
+      </div>
+      
+      <div class="filters-grid">
+        <div class="filter-item">
+          <label>Buscar Activo</label>
+          <input 
+            type="text" 
+            [(ngModel)]="searchTerm"
+            (input)="onSearchChange()"
+            placeholder="Nombre, responsable, ubicación...">
+        </div>
+        
+        <div class="filter-item">
+          <label>Tipo de Activo</label>
+          <select [(ngModel)]="selectedType" (change)="onTypeFilterChange()">
+            <option value="">Todos los tipos</option>
+            <option *ngFor="let type of assetTypes" [value]="type">{{ type }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de activos -->
+    <section class="asset-table">
+      <div class="table-header">
+        <h2>Inventario de Activos</h2>
+        <p class="table-count">{{ filteredAssets.length }} de {{ assets.length }} activo(s)</p>
+      </div>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Tipo de Activo</th>
+              <th>Responsable</th>
+              <th>Ubicación</th>
+              <th>Cantidad</th>
+              <th>Depreciación Anual</th>
+              <th>% Dep.</th>
+              <th>Años de Uso</th>
+              <th>Valor Actual</th>
+              <th>Fecha de Compra</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let asset of filteredAssets">
+              <td>{{ asset.id }}</td>
+              <td>{{ asset.name }}</td>
+              <td>{{ asset.type }}</td>
+              <td>{{ asset.responsible }}</td>
+              <td>{{ asset.location }}</td>
+              <td>{{ asset.quantity }}</td>
+              <td>{{ formatCurrency(getDepreciation(asset).anual) }}</td>
+              <td>{{ getDepreciationRate(asset.type) }}%</td>
+              <td>{{ getYearsOfUse(asset) }}</td>
+              <td>{{ formatCurrency(getCurrentValue(asset)) }}</td>
+              <td>{{ asset.date }}</td>
+              <td>
+                <span class="status-badge" [class]="asset.status.toLowerCase().replace(' ', '-')">
+                  {{ asset.status }}
+                </span>
+              </td>
+              <td class="actions">
+                <button class="btn-edit" (click)="openEditModal(asset)" title="Editar activo">
+                  <span class="btn-text">Editar</span>
+                </button>
+                <button class="btn-delete" (click)="deleteAsset(asset.id)" title="Eliminar activo">
+                  <span class="btn-text">Eliminar</span>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredAssets.length === 0">
+              <td colspan="13" class="no-data">
+                No se encontraron activos
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal -->
+<div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ modalTitle }}</h2>
+      <button class="close-button" (click)="closeModal()">&times;</button>
+    </div>
+    
+    <form (ngSubmit)="onSubmit()" #form="ngForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="name">Nombre *</label>
+          <input 
+            type="text" 
+            id="name" 
+            name="name"
+            [(ngModel)]="assetForm.name"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="type">Tipo *</label>
+          <select 
+            id="type" 
+            name="type"
+            [(ngModel)]="assetForm.type"
+            required>
+            <option *ngFor="let type of assetTypes" [value]="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="price">Precio Unitario ($) *</label>
+          <input 
+            type="number" 
+            id="price" 
+            name="price"
+            [(ngModel)]="assetForm.price"
+            min="0"
+            step="0.01"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="quantity">Cantidad *</label>
+          <input 
+            type="number" 
+            id="quantity" 
+            name="quantity"
+            [(ngModel)]="assetForm.quantity"
+            min="1"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Estado *</label>
+          <select 
+            id="status" 
+            name="status"
+            [(ngModel)]="assetForm.status"
+            required>
+            <option *ngFor="let status of assetStatuses" [value]="status">
+              {{ status }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="responsible">Responsable *</label>
+          <input 
+            type="text" 
+            id="responsible" 
+            name="responsible"
+            [(ngModel)]="assetForm.responsible"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Ubicación *</label>
+          <input 
+            type="text" 
+            id="location" 
+            name="location"
+            [(ngModel)]="assetForm.location"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="date">Fecha *</label>
+          <input 
+            type="date" 
+            id="date" 
+            name="date"
+            [(ngModel)]="assetForm.date"
+            required>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeModal()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-submit" [disabled]="!form.valid">
+          {{ editingAsset ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

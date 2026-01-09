@@ -1,0 +1,271 @@
+<app-navbar></app-navbar>
+
+<div class="dashboard-container">
+  <main class="main-content">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <h1>Reportes CSV</h1>
+        <p class="page-subtitle">Generación de reportes en formato CSV para análisis de activos</p>
+      </div>
+    </div>
+
+    <!-- Mensajes -->
+    <div *ngIf="message" class="message" [ngClass]="messageType">
+      {{ message }}
+    </div>
+
+    <!-- Generador de Reportes -->
+    <div class="report-generator">
+      <div class="generator-header">
+        <h2>Generador de Reportes</h2>
+        <p>Seleccione el tipo de reporte y aplique filtros opcionales</p>
+      </div>
+
+      <div class="generator-body">
+        <!-- Filtros Avanzados -->
+        <div class="filters-section">
+          <h3>Filtros de Búsqueda</h3>
+          
+          <div class="filters-grid">
+            <div class="form-group">
+              <label for="filterYear">Año de Compra</label>
+              <select id="filterYear" [(ngModel)]="filterYear" class="form-control">
+                <option [ngValue]="null">Todos los años</option>
+                <option *ngFor="let year of availableYears" [ngValue]="year">{{ year }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="filterLocation">Ubicación</label>
+              <select id="filterLocation" [(ngModel)]="filterLocation" class="form-control">
+                <option value="">Todas las ubicaciones</option>
+                <option *ngFor="let location of availableLocations" [value]="location">{{ location }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="filterName">Nombre de Activo</label>
+              <input type="text" id="filterName" [(ngModel)]="filterName" class="form-control" placeholder="Buscar por nombre...">
+            </div>
+
+            <div class="form-group">
+              <label for="filterStatus">Estado</label>
+              <select id="filterStatus" [(ngModel)]="filterStatus" class="form-control">
+                <option value="">Todos los estados</option>
+                <option *ngFor="let status of assetStatuses" [value]="status">{{ status }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="filterType">Tipo de Activo</label>
+              <select id="filterType" [(ngModel)]="filterType" class="form-control">
+                <option value="">Todos los tipos</option>
+                <option *ngFor="let type of assetTypes" [value]="type">{{ type }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="startDate">Fecha Inicio</label>
+              <input type="date" id="startDate" [(ngModel)]="startDate" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="endDate">Fecha Fin</label>
+              <input type="date" id="endDate" [(ngModel)]="endDate" class="form-control">
+            </div>
+
+            <div class="form-group filter-actions">
+              <button class="btn-filter" (click)="applyFilters()">
+                <span>Aplicar Filtros</span>
+              </button>
+              <button class="btn-clear" (click)="clearFilters()">
+                <span>Limpiar</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="filter-results">
+            <p><strong>Activos filtrados:</strong> {{ filteredAssets.length }} de {{ assets.length }}</p>
+          </div>
+        </div>
+
+        <!-- Tipo de Reporte -->
+        <div class="form-group">
+          <label for="reportType">Tipo de Reporte</label>
+          <select id="reportType" [(ngModel)]="reportType" class="form-control">
+            <option value="">-- Seleccione un tipo --</option>
+            <optgroup label="Reportes Generales">
+              <option value="inventario">Inventario General</option>
+              <option value="disponibles">Activos Disponibles</option>
+              <option value="estado">Activos por Estado</option>
+              <option value="tipo">Activos por Tipo</option>
+              <option value="depreciacion">Reporte de Depreciación</option>
+            </optgroup>
+            <optgroup label="Reportes Individuales">
+              <option value="individual">Reporte Individual</option>
+              <option value="certificado">Certificado de Asignación</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- Formato de Reporte -->
+        <div class="form-group">
+          <label for="reportFormat">Formato del Reporte</label>
+          <select id="reportFormat" [(ngModel)]="reportFormat" class="form-control">
+            <option value="csv">CSV (Excel)</option>
+            <option value="pdf">PDF</option>
+          </select>
+        </div>
+
+        <!-- Selección de Activo (solo si es necesario) -->
+        <div class="form-group" *ngIf="requiereSeleccionActivo()">
+          <label for="assetSelect">Seleccionar Activo</label>
+          <select id="assetSelect" [(ngModel)]="selectedAssetId" class="form-control">
+            <option value="">-- Seleccione un activo --</option>
+            <option *ngFor="let asset of filteredAssets" [value]="asset.id">
+              {{ asset.name }} - {{ asset.type }} ({{ asset.responsible }})
+            </option>
+          </select>
+        </div>
+
+        <!-- Botón Generar -->
+        <button 
+          class="btn-generate" 
+          (click)="generarReporte()"
+          [disabled]="!reportType || (requiereSeleccionActivo() && !selectedAssetId)">
+          <span class="btn-icon">↓</span>
+          <span>Generar Reporte {{ reportFormat === 'pdf' ? 'PDF' : 'CSV' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tipos de Reportes Disponibles -->
+    <div class="report-types">
+      <h2>Tipos de Reportes Disponibles</h2>
+      
+      <div class="report-grid">
+        <!-- Inventario Completo -->
+        <div class="report-card">
+          <div class="reporte-header">
+            <h3>Inventario General</h3>
+            <span class="reporte-badge">CSV/PDF</span>
+          </div>
+          <p class="report-description">
+            Genera un reporte completo con todos los activos del sistema. Incluye información detallada 
+            de cada activo: nombre, tipo, precio, cantidad, depreciación calculada, estado actual, 
+            responsable, ubicación y fecha de compra.
+          </p>
+          <div class="report-info">
+            <span class="info-item">Total de activos: {{ assets.length }}</span>
+          </div>
+        </div>
+
+        <!-- Activos Disponibles -->
+        <div class="report-card">
+          <div class="reporte-header">
+            <h3>Activos Disponibles</h3>
+            <span class="reporte-badge">CSV/PDF</span>
+          </div>
+          <p class="report-description">
+            Muestra únicamente los activos que están en estado "Disponible" y listos para ser asignados. 
+            Útil para consultas rápidas de inventario disponible.
+          </p>
+          <div class="report-info">
+            <span class="info-item">Filtro: Solo disponibles</span>
+          </div>
+        </div>
+
+        <!-- Reporte por Estado -->
+        <div class="report-card">
+          <div class="reporte-header">
+            <h3>Activos por Estado</h3>
+            <span class="reporte-badge">CSV/PDF</span>
+          </div>
+          <p class="report-description">
+            Resumen agrupado que muestra cuántos activos hay en cada estado (Disponible, No disponible, 
+            En Mantenimiento, Dado de Baja). Incluye el valor total y porcentaje de cada grupo.
+          </p>
+          <div class="report-info">
+            <span class="info-item">Resumen por categoría de estado</span>
+          </div>
+        </div>
+
+        <!-- Reporte por Tipo -->
+        <div class="report-card">
+          <div class="reporte-header">
+            <h3>Activos por Tipo</h3>
+            <span class="reporte-badge">CSV/PDF</span>
+          </div>
+          <p class="report-description">
+            Distribución de activos por tipo o categoría (Equipos de cómputo, Vehículos, Edificaciones, etc.). 
+            Muestra cantidad total y valor de cada tipo de activo.
+          </p>
+          <div class="report-info">
+            <span class="info-item">Resumen por tipo de activo</span>
+          </div>
+        </div>
+
+        <!-- Reporte de Depreciación -->
+        <div class="report-card">
+          <div class="reporte-header">
+            <h3>Reporte de Depreciación</h3>
+            <span class="reporte-badge">CSV/PDF</span>
+          </div>
+          <p class="report-description">
+            Calcula la depreciación de cada activo según su tipo y años de uso. Muestra el valor original, 
+            la depreciación anual y acumulada, el porcentaje de depreciación y el valor actual de cada activo.
+          </p>
+          <div class="report-info">
+            <span class="info-item">Con cálculos de depreciación</span>
+          </div>
+        </div>
+
+        <!-- Reporte Individual -->
+        <div class="report-card">
+          <div class="reporte-header">
+            <h3>Reporte Individual</h3>
+            <span class="reporte-badge">CSV/PDF</span>
+          </div>
+          <p class="report-description">
+            Genera un reporte detallado de un activo específico seleccionado. Incluye toda la información 
+            del activo y sus cálculos de depreciación.
+          </p>
+          <div class="report-info">
+            <span class="info-item">Requiere selección de activo</span>
+          </div>
+        </div>
+
+        <!-- Certificado de Asignación -->
+        <div class="report-card">
+          <div class="reporte-header">
+            <h3>Certificado de Asignación</h3>
+            <span class="reporte-badge">CSV/PDF</span>
+          </div>
+          <p class="report-description">
+            Documento formal de asignación de un activo específico. Incluye todos los datos del activo 
+            y la fecha de certificación. Útil para control administrativo.
+          </p>
+          <div class="report-info">
+            <span class="info-item">Documento oficial</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="info-section">
+      <h3>¿Cómo funcionan los Reportes?</h3>
+      <ul>
+        <li><strong>Inventario General:</strong> Descarga todos los activos con toda su información</li>
+        <li><strong>Activos Disponibles:</strong> Solo muestra activos que pueden asignarse</li>
+        <li><strong>Activos por Estado:</strong> Resumen de cuántos activos hay en cada estado</li>
+        <li><strong>Activos por Tipo:</strong> Resumen de cuántos activos hay de cada tipo</li>
+        <li><strong>Reporte de Depreciación:</strong> Muestra cómo se ha depreciado el valor de cada activo</li>
+        <li><strong>Reporte Individual:</strong> Información detallada de un solo activo</li>
+        <li><strong>Certificado de Asignación:</strong> Documento oficial para un activo específico</li>
+      </ul>
+      <p style="margin-top: 1rem;"><strong>Nota:</strong> Los reportes se pueden descargar en formato <strong>CSV</strong> (Excel) o <strong>PDF</strong>. Solo selecciona el formato que prefieras antes de generar.</p>
+    </div>
+  </main>
+</div>

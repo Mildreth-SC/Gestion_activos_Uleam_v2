@@ -1,0 +1,264 @@
+/* ===== CONTAINER Y LAYOUT ===== */
+.dashboard-container {
+  padding: 2rem;
+  background: #f5f7fa;
+  min-height: calc(100vh - 80px);
+}
+
+.main-content {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ===== HEADER DE PÁGINA ===== */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 3px solid #2c5f2d;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-content h1 {
+  color: #2c3e50;
+  font-size: 2.2rem;
+  margin-bottom: 0.3rem;
+  font-weight: 700;
+}
+
+.page-subtitle {
+  color: #7f8c8d;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.export-button {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.export-button .btn-icon {
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.export-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(39, 174, 96, 0.5);
+}
+
+/* ===== ESTADÍSTICAS ===== */
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #2c5f2d;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card h3 {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 0.5rem 0;
+}
+
+.stat-number {
+  color: #2c5f2d;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ===== BÚSQUEDA ===== */
+.search-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #3498db;
+}
+
+.search-header {
+  margin-bottom: 1rem;
+}
+
+.search-header h2 {
+  color: #2c3e50;
+  font-size: 1.3rem;
+  margin: 0 0 0.3rem 0;
+  font-weight: 600;
+}
+
+.search-header p {
+  color: #7f8c8d;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* ===== TABLA DE USUARIOS ===== */
+.users-table {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.table-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid #2c5f2d;
+}
+
+.table-header h2 {
+  color: #2c3e50;
+  font-size: 1.6rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+thead {
+  background: linear-gradient(135deg, #2c5f2d 0%, #1a3d1a 100%);
+  color: white;
+}
+
+thead th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 3px solid #1a3d1a;
+}
+
+tbody tr {
+  border-bottom: 1px solid #ecf0f1;
+  transition: all 0.2s ease;
+}
+
+tbody tr:hover {
+  background: #f8f9fa;
+  transform: translateX(2px);
+  box-shadow: -3px 0 0 #2c5f2d inset;
+}
+
+tbody td {
+  padding: 1rem;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-icon {
+  font-size: 1.5rem;
+}
+
+.username {
+  font-weight: 600;
+  color: #2c5f2d;
+}
+
+/* ===== MENSAJE SIN USUARIOS ===== */
+.no-users {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #7f8c8d;
+}
+
+.no-users p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-content h1 {
+    font-size: 1.8rem;
+  }
+
+  .stats-section {
+    grid-template-columns: 1fr;
+  }
+
+  .table-container {
+    overflow-x: scroll;
+  }
+
+  table {
+    min-width: 600px;
+  }
+}
